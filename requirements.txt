@@ -1,0 +1,8 @@
+sklearn
+numpy
+fastapi
+pandas
+pydantic
+tensorflow==2.0.0
+uvicorn
+uvloop
