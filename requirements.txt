@@ -1,8 +1,6 @@
 sklearn
-numpy
 fastapi
 pandas
 pydantic
 tensorflow
 uvicorn
-uvloop
