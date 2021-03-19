@@ -1,6 +1,7 @@
 import numpy as np
-from fastapi import FastAPI
-import pandas as pd 
+from fastapi import FastAPI, Form
+import pandas as pd
+from starlette.responses import HTMLResponse 
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 # from model import preProcess_data
@@ -35,12 +36,22 @@ class inputToModel(BaseModel):
 
 @app.get('/')
 def basic_view():
-    return {"WELCOME": "GO TO /docs route or send post request to /predict "}
+    return {"WELCOME": "GO TO /docs route, or /post or send post request to /predict "}
+
+
+
+@app.get('/predict', response_class=HTMLResponse)
+def take_inp():
+    return '''<form method="post"> 
+    <input type="text" maxlength="28" name="text" value="Text Emotion to be tested"/>  
+    <input type="submit"/> 
+    </form>'''
+
 
 
 @app.post('/predict')
-def predict(inp: inputToModel):
-    clean_text = my_pipeline(inp.text)
+def predict(text:str = Form(...)):
+    clean_text = my_pipeline(text)
     loaded_model = tf.keras.models.load_model('sentiment.h5')
     predictions = loaded_model.predict(clean_text)
     sentiment = int(np.argmax(predictions))
@@ -54,7 +65,7 @@ def predict(inp: inputToModel):
         t_sentiment='postive'
     
     return {
-        "ACTUALL SENTENCE": inp.text,
+        "ACTUALL SENTENCE": text,
         "PREDICTED SENTIMENT": t_sentiment,
         "Probability": probability
     }
